@@ -1,0 +1,16 @@
+.assist{
+    width: 5rem;
+    height: 100%;
+    background-color: var(--side_gray);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;  
+    align-items: center;
+    img{
+       width: 50%;
+    }
+    #first{
+        margin-top: 1rem;
+    }
+    
+}
