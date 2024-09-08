@@ -10,7 +10,18 @@
   .chat {
     height: 100%;
     width: 100%;
-    background-color: aqua;
+    background-color: var(--side_gray);
+    color: black;
+    /* overflow-y: scroll; */
+    
+    .AI {
+      background-color:rgb(85, 198, 242);
+    }
+    .User{
+      background-color: rgb(224, 242, 252);
+    }
+
+
   }
   .user_input {
     display: flex;
