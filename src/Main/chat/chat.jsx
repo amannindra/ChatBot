@@ -10,13 +10,17 @@ function Chat() {
   ]);
   const handleSend = () => {
     alert(userText);
-    setuserlist((list) => [...{ User: userText }]);
+    setuserlist((list) => [...list, { User: userText }]);
     setuserText("");
     fetch("http://127.0.0.1:5000/datas");
   };
 
   useEffect(() => {
-    
+    fetch("/sendData").then((response) => response.json()).then(data => {
+      setuserlist((list) => [...list, { AI: data }]);
+      console.log(data);
+    })
+
 
   }, [userlist]);
 
