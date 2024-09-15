@@ -4,46 +4,51 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 function Chat() {
   const [userText, setuserText] = useState("");
-  const [userlist, setuserlist] = useState([
+  const [chatHistory, setChatHistory] = useState([
     { AI: "Hi User" },
     { User: "Hi AI" },
   ]);
   const handleSend = () => {
-    alert(userText);
-    setuserlist((list) => [...list, { User: userText }]);
+    // alert(userText);
+    setChatHistory((list) => list.push({ User: userText }));
+    console.log(chatHistory);
     setuserText("");
-    fetch("http://127.0.0.1:5000/datas");
+    axios({
+      method: "post",
+      url: "http://localhost:5000/sendData",
+      ContentType: "application/json",
+      data: {
+        chatHistory: chatHistory,
+      },
+    }).then(
+      (response) => {
+        console.log(response);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   };
 
   useEffect(() => {
-    fetch("/sendData").then((response) => response.json()).then(data => {
-      setuserlist((list) => [...list, { AI: data }]);
+    fetch("http://localhost:5000/sendData").then((data) => {
+      setChatHistory((list) => [...list, { AI: data }]);
       console.log(data);
-    })
-
-
-  }, [userlist]);
+    });
+  }, []);
 
   return (
     <div className="center">
       <div className="chat">
-        {userlist.map((entry, index) => {
-          if (entry.AI) {
-            return (
-              <div className="AI" key={index}>
-                {entry.AI}
-              </div>
-            );
-          } else if (entry.User) {
-            return (
-              <div className="User" key={index}>
-                {entry.User}
-              </div>
-            );
-          }
+        {chatHistory.map((message, index) => {
+          <div
+            key={index}
+            className={`message ${message.sender === "AI" ? "AI" : "User"}`}
+          >
+            {message.text}
+          </div>;
         })}
       </div>
-
       <div className="user_input">
         <input
           placeholder="input"
