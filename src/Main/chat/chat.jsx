@@ -5,12 +5,12 @@ import axios from "axios";
 function Chat() {
   const [userText, setuserText] = useState("");
   const [chatHistory, setChatHistory] = useState([
-    { AI: "Hi User" },
-    { User: "Hi AI" },
+    { sender: "AI", text: "Hi User" },
+    { sender: "User", text: "Hi AI" },
   ]);
   const handleSend = () => {
     // alert(userText);
-    setChatHistory((list) => list.push({ User: userText }));
+    setChatHistory((prev) => [...prev, { sender: "User", text: userText }]);
     console.log(chatHistory);
     setuserText("");
     axios({
@@ -31,29 +31,33 @@ function Chat() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/sendData").then((data) => {
-      setChatHistory((list) => [...list, { AI: data }]);
-      console.log(data);
-    });
+    // Fetch AI response
+    fetch("http://localhost:5000/sendData")
+      .then((response) => response.json())
+      .then((data) => {
+        // Append AI response to chat history
+        setChatHistory((prev) => [...prev, { sender: "AI", text: data }]);
+        console.log(data);
+      });
   }, []);
 
   return (
     <div className="center">
       <div className="chat">
-        {chatHistory.map((message, index) => {
+        {chatHistory.map((message, index) => (
           <div
             key={index}
             className={`message ${message.sender === "AI" ? "AI" : "User"}`}
           >
             {message.text}
-          </div>;
-        })}
+          </div>
+        ))}
       </div>
       <div className="user_input">
         <input
           placeholder="input"
           onKeyDown={(e) => {
-            if (e.key == "Enter") {
+            if (e.key === "Enter") {
               handleSend();
             }
           }}
