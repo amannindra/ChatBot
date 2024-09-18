@@ -1,45 +1,30 @@
 import "./chat.css";
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+
 function Chat() {
   const [userText, setuserText] = useState("");
   const [chatHistory, setChatHistory] = useState([
     { sender: "AI", text: "Hi User" },
     { sender: "User", text: "Hi AI" },
   ]);
+
   const handleSend = () => {
-    // alert(userText);
-    setChatHistory((prev) => [...prev, { sender: "User", text: userText }]);
-    console.log(chatHistory);
-    setuserText("");
-    axios({
-      method: "post",
-      url: "http://localhost:5000/sendData",
-      ContentType: "application/json",
-      data: {
-        chatHistory: chatHistory,
+    if (userText.trim() === "") return;
+
+    const newChatHistory = [...chatHistory, { sender: "User", text: userText }];
+
+    axios.post(
+      "http://localhost:5000/getData",
+      {
+        chatHistory: newChatHistory,
+        message: userText,
       },
-    }).then(
-      (response) => {
-        console.log(response);
-      },
-      (error) => {
-        console.log(error);
+      {
+        headers: { "Content-Type": "application/json" },
       }
     );
   };
-
-  useEffect(() => {
-    // Fetch AI response
-    fetch("http://localhost:5000/sendData")
-      .then((response) => response.json())
-      .then((data) => {
-        // Append AI response to chat history
-        setChatHistory((prev) => [...prev, { sender: "AI", text: data }]);
-        console.log(data);
-      });
-  }, []);
 
   return (
     <div className="center">
@@ -55,7 +40,7 @@ function Chat() {
       </div>
       <div className="user_input">
         <input
-          placeholder="input"
+          placeholder="Type your message..."
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               handleSend();
@@ -63,7 +48,7 @@ function Chat() {
           }}
           onChange={(e) => setuserText(e.target.value)}
           value={userText}
-        ></input>
+        />
       </div>
     </div>
   );
