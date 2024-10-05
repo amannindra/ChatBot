@@ -1,42 +1,52 @@
 import "./chat.css";
 import React, { useState } from "react";
 import axios from "axios";
+import { createRoot } from "react-dom/client";
+import Markdown from "react-markdown";
 
 function Chat() {
   const [userText, setuserText] = useState("");
   const [chatHistory, setChatHistory] = useState([
-    { sender: "AI", text: "Hi User" },
-    { sender: "User", text: "Hi AI" },
+
   ]);
+  const [responseText, setResponseText] = useState("");
 
   const handleSend = () => {
     if (userText.trim() === "") return;
+    axios
+      .post("http://localhost:8080/Gemini", { userText })
+      .then((res) => {
+        setChatHistory((chatHistory) => [
+          ...chatHistory,
+          { role: "user", content: userText },
+          { role: "assistant", content: res.data },
+        ]);
+        console.log("data: " + res.data);
+        setResponseText(res.data);
 
-    const newChatHistory = [...chatHistory, { sender: "User", text: userText }];
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+      setuserText("");
 
-    axios.post(
-      "http://localhost:5000/getData",
-      {
-        chatHistory: newChatHistory,
-        message: userText,
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
   };
 
   return (
     <div className="center">
       <div className="chat">
-        {chatHistory.map((message, index) => (
-          <div
-            key={index}
-            className={`message ${message.sender === "AI" ? "AI" : "User"}`}
-          >
-            {message.text}
-          </div>
-        ))}
+        <div className="chatText">
+          {chatHistory.map((message, index) => (
+            <div
+              key={index}
+              className={`message ${
+                message.role === "assistant" ? "assistant" : "user"
+              }`}
+            >
+              <Markdown>{message.content}</Markdown>
+            </div>
+          ))}
+        </div>
       </div>
       <div className="user_input">
         <input

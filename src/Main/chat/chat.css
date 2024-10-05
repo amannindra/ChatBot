@@ -6,27 +6,59 @@
   height: 90vh;
   gap: 3vh;
   width: 50vw;
-  
+
   .chat {
     height: 100%;
     width: 100%;
     background-color: var(--side_gray);
     color: black;
-    /* overflow-y: scroll; */
     
-    .AI {
-      background-color:rgb(85, 198, 242);
-    }
-    .User{
-      background-color: rgb(224, 242, 252);
-    }
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
 
+    align-items: center;
 
+    .chatText {
+      position: relative;
+      top: 1rem;
+      display: flex;
+      height: 95%;
+      width: 95%;
+      gap: 15px;
+      overflow-y: auto;
+      max-height: 100%;
+      flex-direction: column;
+
+      .assistant {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        background-color: rgb(85, 198, 242);
+        padding: 0.5rem;
+        position: relative;
+        border-radius: 10px;
+        
+        width: fit-content;
+      }
+
+      .user {
+        background-color: rgb(224, 242, 252);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0.5rem;
+        position: relative;
+        width: fit-content;
+        border-radius: 10px;
+        justify-content: flex-end;
+      }
+    }
   }
   .user_input {
     display: flex;
     width: 100%;
-    
+
     gap: 1rem;
     input {
       width: 100%;
@@ -43,10 +75,8 @@
       height: 40px;
       border: none;
       border-radius: 30px;
-
     }
     button:hover {
-
     }
   }
 }
