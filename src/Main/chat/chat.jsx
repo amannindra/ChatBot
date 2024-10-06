@@ -6,29 +6,62 @@ import Markdown from "react-markdown";
 
 function Chat() {
   const [userText, setuserText] = useState("");
-  const [chatHistory, setChatHistory] = useState([
+  const [chatHistory, setChatHistory] = useState([]);
 
-  ]);
-  const [responseText, setResponseText] = useState("");
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (userText.trim() === "") return;
-    axios
-      .post("http://localhost:8080/Gemini", { userText })
-      .then((res) => {
-        setChatHistory((chatHistory) => [
-          ...chatHistory,
-          { role: "user", content: userText },
-          { role: "assistant", content: res.data },
-        ]);
-        console.log("data: " + res.data);
-        setResponseText(res.data);
+    // axios
+    //   .post("http://localhost:8080/Gemini", { userText })
+    //   .then((res) => {
+    //     setChatHistory((chatHistory) => [
+    //       ...chatHistory,
+    //       { role: "user", content: userText },
+    //       { role: "assistant", content: res.data },
+    //     ]);
+    //     console.log("data: " + res.data);
+    //     setResponseText(res.data);
 
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   });
+    setChatHistory((prev) => [
+      ...prev,
+      {
+        role: "user",
+        parts: [{ text: userText }],
+      },
+    ]);
+
+    try {
+      const options = {
+        method: "POST",
+        body: JSON.stringify({
+          history: chatHistory,
+          message: userText,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const response = await fetch("http://localhost:8080/Gemini", options);
+      const data = await response.text();
+      console.log(data);
+
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: "model",
+          parts: [{ text: data }],
+        },
+      ]);
+
       setuserText("");
+    } catch (error) {
+      console.error(error);
+    }
+
 
   };
 
@@ -39,11 +72,14 @@ function Chat() {
           {chatHistory.map((message, index) => (
             <div
               key={index}
-              className={`message ${
-                message.role === "assistant" ? "assistant" : "user"
-              }`}
-            >
-              <Markdown>{message.content}</Markdown>
+              className= "model"
+            >   
+              {message.role === "model" ? 
+              <img src={} /> : <img src={} />
+              }
+
+
+              <Markdown>{message.parts[0].text}</Markdown>
             </div>
           ))}
         </div>
